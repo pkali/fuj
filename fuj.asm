@@ -1,5 +1,5 @@
 .macro ver
-    .sbyte '0.01'
+    .sbyte '0.02'
 .endm  
 
 .macro gosio
@@ -20,18 +20,6 @@
     
     org $2000
 start
-    .local
-    _dev = $70      ; FJ itself
-    _dtimlo = $0f   ; timeout in s
-    _dunit = 1      ; device #
-    _dbyt = $100    ; buffer length
-
-    _dcmnd = $F4    ; command
-    _dstats = $40   ; read/write
-    _daux1 = $ff    
-    _daux2 = $ff
-    gosio    
-    .endl
     
     .local
     ; close DIR
@@ -39,7 +27,7 @@ start
     _dtimlo = $0f   ; timeout in s
     _dunit = 1      ; device #
 
-    _dcmnd = $F5
+    _dcmnd = $F5    ; close directory
     _dbyt = 0
     _dstats = 0
     _daux1 = 4      ; slot
@@ -53,7 +41,7 @@ start
     _dtimlo = $0f   ; timeout in s
     _dunit = 1      ; device #
 
-    _dcmnd = $F9
+    _dcmnd = $F9    ; mount host (slot number)
     _dbyt = 0
     _dstats = 0
     _daux1 = 4      ;slot
@@ -68,7 +56,7 @@ start
     _dunit = 1      ; device #
     _dbyt = $100    ; buffer length
 
-    _dcmnd = $F7
+    _dcmnd = $F7    ; open directory
     _dstats = $80
     _dbufa = directory_path
     _daux1 = 4
@@ -83,7 +71,7 @@ start
     _dunit = 1      ; device #
     _dbyt = 38+10   ; buffer length (screen width + 10 status bytes)
 
-    _dcmnd = $F6    ; read dir
+    _dcmnd = $F6    ; read directory entry
     _dstats = $40
     _dbufa = $bc40  ;small_buffer
     _daux1 = 38+10  ; max dir entry length
