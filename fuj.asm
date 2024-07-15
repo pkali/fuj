@@ -49,7 +49,7 @@ start
     
     .local
     ; mount host
-    _dev = $70      ; FJ itself
+    _dev = $70      ; FN itself
     _dtimlo = $0f   ; timeout in s
     _dunit = 1      ; device #
 
@@ -63,7 +63,7 @@ start
     
     .local
     ; open DIR
-    _dev = $70      ; FJ itself
+    _dev = $70      ; FN itself
     _dtimlo = $0f   ; timeout in s
     _dunit = 1      ; device #
     _dbyt = $100    ; buffer length
@@ -76,8 +76,28 @@ start
     gosio
     .endl
 
-    halt
+    .local 
+    ; read DIR
+    _dev = $70      ; FN itself
+    _dtimlo = $0f   ; timeout in s
+    _dunit = 1      ; device #
+    _dbyt = 38+10   ; buffer length (screen width + 10 status bytes)
+
+    _dcmnd = $F6    ; read dir
+    _dstats = $40
+    _dbufa = $bc40  ;small_buffer
+    _daux1 = 38+10  ; max dir entry length
+    _daux2 = $80    ; with file status bytes
+    gosio
+    
+	.endl
+
+
+    ;halt %00000111
+    rts
 directory_path
     .byte '/games/', 0
+small_buffer
+    :100 .by 0  ;.ds $100
 big_buffer
     run start
