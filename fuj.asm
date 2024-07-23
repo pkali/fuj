@@ -1,24 +1,10 @@
 .macro ver
-    .sbyte '0.02'
+    .sbyte '0.03'
 .endm  
 DSWRIT = $80
 DSREAD = $40
 DEVIDN = $70
 slot=4
-
-
-.macro gosio
-    mva #_dev DDEVIC
-    mva #_dunit DUNIT
-    mva #_dcmnd DCMND
-    mva #_dstats DSTATS
-    mwa #big_buffer DBUFA
-    mva #_dtimlo DTIMLO
-    mwa #_dbyt DBYT
-    mva #_daux1 DAUX1
-    mva #_daux2 DAUX2
-    JSR SIOV
-.endm
 
     icl 'lib/ATARISYS.ASM'
     icl 'lib/MACRO.ASM'
@@ -65,7 +51,7 @@ SIOVDST:
     
     
 directory_path
-    .by "/games/" 0, 0, 0, 0, 0
+    .by "/games/" 0
 
 DCB_open_directory
     .BYTE   DEVIDN          ; DDEVIC
@@ -78,9 +64,6 @@ DCB_open_directory
     .WORD   $100            ; DBYT
     .BYTE   slot            ; DAUX1
     .BYTE   1               ; DAUX2
-
-
-    ; close DIR
 
 DCB_close_directory
     .BYTE   DEVIDN          ; DDEVIC
@@ -106,7 +89,6 @@ DCB_mount_host
     .BYTE   slot            ; DAUX1
     .BYTE   0               ; DAUX2
 
-
 DCB_read_dir
     .BYTE   DEVIDN          ; DDEVIC
     .BYTE   $1              ; DUNIT
@@ -122,6 +104,6 @@ DCB_read_dir
 
 
 small_buffer
-    :100 .by 0  ;.ds $100
+    .ds $100
 big_buffer
     run start
