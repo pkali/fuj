@@ -12,21 +12,17 @@ slot=4
     org $2000
 start
     
-    lda #<DCB_close_directory
-    ldy #>DCB_close_directory
+    mwa #DCB_close_dir DCB_ADDR
     jsr DOSIOV
             
-    lda #<DCB_mount_host
-    ldy #>DCB_mount_host
+    mwa #DCB_mount_host DCB_ADDR
     jsr DOSIOV
   
-    lda #<DCB_open_directory
-    ldy #>DCB_open_directory
+    mwa #DCB_open_dir DCB_ADDR
     jsr DOSIOV
 
 loop
-    lda #<DCB_read_dir    
-    ldy #>DCB_read_dir
+    mwa DCB_read_dir DCB_ADDR    
     jsr DOSIOV
     lda $bc40
     cmp #$7f
@@ -36,36 +32,34 @@ loop
     rts
 
     
-DOSIOV: STA DODCBL+1    ; Set source address
-    STY DODCBL+2
-    LDY #$0B            ; 12 bytes
-DODCBL  LDA $FFFF,Y     ; Changed above.
-    STA DCB,Y           ; To DCB table
-    DEY                 ; Count down
-    BPL DODCBL          ; Until done
-
+DOSIOV
+    LDY #$0B                ; 12 bytes
+@   LDA DCB_ADDR:$FFFF,Y    ; Changed above.
+      STA DCB,Y             ; To DCB table
+      DEY                   ; Count down
+    BPL @-                  ; Until done
 SIOVDST:    
-    JSR SIOV            ; Call SIOV
-    LDY DSTATS          ; Get STATUS in Y
+    JSR SIOV                ; Call SIOV
+    LDY DSTATS              ; Get STATUS in Y
     RTS         
     
     
-directory_path
+dir_path
     .by "/games/" 0
 
-DCB_open_directory
+DCB_open_dir
     .BYTE   DEVIDN          ; DDEVIC
     .BYTE   $1              ; DUNIT
     .BYTE   $f7             ; DCOMND
     .BYTE   DSWRIT          ; DSTATS
-    .WORD   directory_path  ; DBUFA
+    .WORD   dir_path  ; DBUFA
     .BYTE   $0F             ; DTIMLO
     .BYTE   $00             ; DRESVD reserved
     .WORD   $100            ; DBYT
     .BYTE   slot            ; DAUX1
     .BYTE   1               ; DAUX2
 
-DCB_close_directory
+DCB_close_dir
     .BYTE   DEVIDN          ; DDEVIC
     .BYTE   $1              ; DUNIT
     .BYTE   $f5             ; DCOMND
