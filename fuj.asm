@@ -22,7 +22,7 @@ start
     jsr DOSIOV
 
 loop
-    mwa DCB_read_dir DCB_ADDR    
+    mwa #DCB_read_dir DCB_ADDR    
     jsr DOSIOV
     lda $bc40
     cmp #$7f
@@ -45,7 +45,7 @@ SIOVDST:
     
     
 dir_path
-    .by "/games/" 0
+    .by "/games/", 0, 0     ;DOES NOT WORK WITH ONE ZERO!!!!
 
 DCB_open_dir
     .BYTE   DEVIDN          ; DDEVIC
